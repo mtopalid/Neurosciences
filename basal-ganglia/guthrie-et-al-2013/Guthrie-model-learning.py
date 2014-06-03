@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # <nbformat>3.0</nbformat>
 
-# <markdowncell>
-
 # **A Long Journey into Reproducible Computational Neurosciences Research**  
 # Meropi Topalidou¹²³, Thomas Boraud³ and Nicolas P. Rougier¹²³*
 # 
@@ -11,22 +9,16 @@
 # ³ Institute of Neurodegenerative Diseases, UMR 5293, Bordeaux, France  
 # * Corresponding author ([Nicolas.Rougier@inria.fr](mailto:Nicolas.Rougier@inria.fr))
 
-# <markdowncell>
 
 # ### Packages import
 
-# <codecell>
 
 from dana import *
 import matplotlib.pyplot as plt
 import os
 import time
 
-# <markdowncell>
-
 # ### Simulation parameters
-
-# <codecell>
 
 # Population size
 n = 4
@@ -40,16 +32,12 @@ dt = 1.0*millisecond
 # Initialization of the random generator (reproductibility !)
 np.random.seed(1)
 
-# <codecell>
-
 # Threshold
 Cortex_h   =  -3.0
 Striatum_h =   0.0
 STN_h      = -10.0
 GPi_h      =  10.0
 Thalamus_h = -40.0
-
-# <codecell>
 
 # Time constants
 Cortex_tau   = 0.01
@@ -58,8 +46,6 @@ STN_tau      = 0.01
 GPi_tau      = 0.01
 Thalamus_tau = 0.01
 
-# <codecell>
-
 # Noise leve (%)
 Cortex_N   =   0.01
 Striatum_N =   0.001
@@ -67,15 +53,11 @@ STN_N      =   0.001
 GPi_N      =   0.03
 Thalamus_N =   0.001
 
-# <codecell>
-
 # Sigmoid parameters
 Vmin       =   0.0
 Vmax       =  20.0
 Vh         =  16.0
 Vc         =   3.0
-
-# <codecell>
 
 # Learning parameters
 a_c = 0.05
@@ -84,11 +66,7 @@ a_aLTD= 0.001
 Wmin = 0.25 
 Wmax = 0.75
 
-# <markdowncell>
-
 # ### Initialization of Values
-
-# <codecell>
 
 simulation = 0
 trial = 0
@@ -103,8 +81,6 @@ C_Th, M_Th = [], []
 Cue_Rw_Choice = np.zeros((120,7))
 equal_m_c = np.zeros(120)
 
-# <codecell>
-
 # Learning weights
 Weights = np.zeros((121,4))
 V_value = np.zeros((120,4))
@@ -115,21 +91,17 @@ R = np.zeros(120)
 Right_Choice = np.zeros(120)
 V = 0.5 * np.ones((4,1))
 
-# <markdowncell>
 
 # ### Helper functions
 
-# <codecell>
 
 def Boltzmann(V,Vmin=Vmin,Vmax=Vmax,Vh=Vh,Vc=Vc):
     return  Vmin + (Vmax-Vmin)/(1.0+np.exp((Vh-V)/Vc))
 
-# <codecell>
 
 def noise(V, level):
     return  V + np.random.normal(0,(abs(V)+0.0001)*level,V.shape)
 
-# <codecell>
 
 def init_weights(Initial_Weights, gain=1):
     global Wmin, Wmax 
@@ -137,16 +109,16 @@ def init_weights(Initial_Weights, gain=1):
     N = np.minimum(np.maximum(N, 0.0),1.0)
     return gain*Initial_Weights*(Wmin+(Wmax-Wmin)*N)
 
-# <codecell>
+
 
 def min_max(w, Wmin = Wmin, Wmax = Wmax):
     return np.minimum(Wmax,np.maximum(w[w!=0],Wmin))
 
-# <markdowncell>
+
 
 # ### Populations
 
-# <codecell>
+
 
 Cortex_cog   = zeros((n,1), """dV/dt = -V +U + (-V + noise(I+Iext,Cortex_N) - Cortex_h)/Cortex_tau;
                                U = np.maximum(V,0); I; Iext""")
@@ -173,11 +145,11 @@ Thalamus_cog = zeros((n,1), """dV/dt = -V +U + (-V -0.5*I + 0.4*I_Cx - Thalamus_
 Thalamus_mot = zeros((1,n), """dV/dt = -V +U + (-V -0.5*I + 0.4*I_Cx - Thalamus_h)/Thalamus_tau;
                                U = np.maximum(noise(V,Thalamus_N),0); I; I_Cx""")
 
-# <markdowncell>
+
 
 # ### Connectivity
 
-# <codecell>
+
 
 Cog_Con = DenseConnection( Cortex_cog('V'),   Striatum_cog('I'), 1.0)
 Initial_Cog_Con = Cog_Con._weights
@@ -214,11 +186,11 @@ DenseConnection( Thalamus_mot('V'), Cortex_mot('I'),    1.0 )
 DenseConnection( Cortex_cog('V'),   Thalamus_cog('I_Cx'),  1.0 )
 DenseConnection( Cortex_mot('V'),   Thalamus_mot('I_Cx'),  1.0 )
 
-# <markdowncell>
+
 
 # ### Cues Randomization for the Simulation
 
-# <codecell>
+
 
 choices_cog  = np.array([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])
 choices_mot  = np.array([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])
@@ -230,11 +202,11 @@ for i in range(1,20):
     cues_cog = np.vstack((cues_cog,choices_cog))
     cues_mot = np.vstack((cues_mot,choices_mot))
 
-# <markdowncell>
+
 
 # ### Record Ensembles' Activity
 
-# <codecell>
+
 
 @after(clock.tick)
 def register(t):
@@ -252,11 +224,11 @@ def register(t):
     C_Th.append(Cortex_cog['V'].copy().ravel())
     M_Th.append(Cortex_mot['V'].copy().ravel())
 
-# <markdowncell>
+
 
 # ### Trial setup
 
-# <codecell>
+
 
 @clock.every(3.0*second,500*millisecond)
 def set_trial(t):
@@ -274,11 +246,11 @@ def set_trial(t):
     Cortex_ass['Iext'][c1,m1] = Cue_Values[c1,0]
     Cortex_ass['Iext'][c2,m2] = Cue_Values[c2,0]
 
-# <markdowncell>
+
 
 # ### Selection
 
-# <codecell>
+
 
 no_move = []
 @clock.every(3.0*second, 2.999*second)
@@ -339,11 +311,11 @@ def selection(t):
 	Cue_Rw_Choice[trial, 5:] =  R[trial], Right_Choice[trial]
 	trial += 1
 
-# <markdowncell>
+
 
 # ### Reset Of Activity Ensembles After Every Trial
 
-# <codecell>
+
 
 @clock.every(3.0*second,3.0*second)
 def reset(time):
@@ -368,11 +340,11 @@ def reset(time):
     Thalamus_cog['V'] = 0
     Thalamus_mot['V'] = 0
 
-# <markdowncell>
+
 
 # ### Run simulation
 
-# <codecell>
+
 
 #start = time.clock()
 #new_trial = time.clock()
@@ -380,11 +352,10 @@ duration = 360*second
 dt = 1*millisecond
 run(time=duration, dt=dt)
 
-# <markdowncell>
+
 
 # ## Display Cortex's Activity from a Trial    
 
-# <codecell>
 
 # trial_time = 3 * 1000 
 # duration = np.linspace(trial_time*0,trial_time*1-1,3000).astype(int)
@@ -402,11 +373,10 @@ run(time=duration, dt=dt)
 # plt.plot(M[duration],'r')
 # plt.show()
 
-# <markdowncell>
+
 
 # ### Display of Weights' Changing During Learning
 
-# <codecell>
 
 plt.plot(Weights[:,0], 'y')
 plt.plot(Weights[:,1], 'b')
@@ -414,11 +384,10 @@ plt.plot(Weights[:,2], 'r')
 plt.plot(Weights[:,3], 'm')
 plt.show()
 
-# <markdowncell>
+
 
 # ### Display of Values' Changing During Learning
 
-# <codecell>
 
 plt.plot(V_value[:,0], 'y')
 plt.plot(V_value[:,1], 'b')
@@ -426,27 +395,24 @@ plt.plot(V_value[:,2], 'r')
 plt.plot(V_value[:,3], 'm')
 plt.show()
 
-# <markdowncell>
 
 # ### Display Equality of Cognitive and Motor Choice
 
-# <codecell>
 
 zeros = np.array(np.where(equal_m_c == 0.0))
 print zeros.size
 
 ones = np.array(np.where(equal_m_c == 1.0))
 
-# <codecell>
+
 
 plt.hist(equal_m_c, bins = 3)
 plt.show()
 
-# <codecell>
+
 
 plt.plot(zeros,'*')
 plt.show()
 
-# <codecell>
 
 
