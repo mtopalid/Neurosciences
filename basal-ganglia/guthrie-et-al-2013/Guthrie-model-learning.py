@@ -354,7 +354,7 @@ run(time=duration, dt=dt)
 
 
 
-# ## Display Cortex's Activity from a Trial    
+# Display Cortex's Activity from a Trial    
 
 
 # trial_time = 3 * 1000 
