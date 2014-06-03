@@ -10,7 +10,7 @@
 # * Corresponding author ([Nicolas.Rougier@inria.fr](mailto:Nicolas.Rougier@inria.fr))
 
 
-# ### Packages import
+# Packages import
 
 
 from dana import *
@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import os
 import time
 
-# ### Simulation parameters
+# Simulation parameters
 
 # Population size
 n = 4
@@ -66,7 +66,7 @@ a_aLTD= 0.001
 Wmin = 0.25 
 Wmax = 0.75
 
-# ### Initialization of Values
+# Initialization of Values
 
 simulation = 0
 trial = 0
@@ -92,7 +92,7 @@ Right_Choice = np.zeros(120)
 V = 0.5 * np.ones((4,1))
 
 
-# ### Helper functions
+# Helper functions
 
 
 def Boltzmann(V,Vmin=Vmin,Vmax=Vmax,Vh=Vh,Vc=Vc):
@@ -116,7 +116,7 @@ def min_max(w, Wmin = Wmin, Wmax = Wmax):
 
 
 
-# ### Populations
+# Populations
 
 
 
@@ -147,7 +147,7 @@ Thalamus_mot = zeros((1,n), """dV/dt = -V +U + (-V -0.5*I + 0.4*I_Cx - Thalamus_
 
 
 
-# ### Connectivity
+# Connectivity
 
 
 
@@ -188,7 +188,7 @@ DenseConnection( Cortex_mot('V'),   Thalamus_mot('I_Cx'),  1.0 )
 
 
 
-# ### Cues Randomization for the Simulation
+# Cues Randomization for the Simulation
 
 
 
@@ -204,7 +204,7 @@ for i in range(1,20):
 
 
 
-# ### Record Ensembles' Activity
+# Record Ensembles' Activity
 
 
 
@@ -226,7 +226,7 @@ def register(t):
 
 
 
-# ### Trial setup
+# Trial setup
 
 
 
@@ -248,7 +248,7 @@ def set_trial(t):
 
 
 
-# ### Selection
+# Selection
 
 
 
@@ -289,6 +289,8 @@ def selection(t):
 		a = (a_aLTP if PE>0 else a_aLTD)
 		dw = PE  * a * Striatum_cog['V'][choice][0]
 		
+		
+		# found in the source code but probably not used to the computation
 		# e = (Wmax - Wmin)/(Cog_Con.weights[choice,choice] -Wmin) - 1
 # 
 # 		if e<0.0 or e>0.0:
@@ -313,7 +315,7 @@ def selection(t):
 
 
 
-# ### Reset Of Activity Ensembles After Every Trial
+# Reset Of Activity Ensembles After Every Trial
 
 
 
@@ -342,12 +344,10 @@ def reset(time):
 
 
 
-# ### Run simulation
+# Run simulation
 
 
 
-#start = time.clock()
-#new_trial = time.clock()
 duration = 360*second
 dt = 1*millisecond
 run(time=duration, dt=dt)
@@ -375,7 +375,7 @@ run(time=duration, dt=dt)
 
 
 
-# ### Display of Weights' Changing During Learning
+# Display of Weights' Changing During Learning
 
 
 plt.plot(Weights[:,0], 'y')
@@ -386,7 +386,7 @@ plt.show()
 
 
 
-# ### Display of Values' Changing During Learning
+# Display of Values' Changing During Learning
 
 
 plt.plot(V_value[:,0], 'y')
@@ -396,7 +396,7 @@ plt.plot(V_value[:,3], 'm')
 plt.show()
 
 
-# ### Display Equality of Cognitive and Motor Choice
+# Display Equality of Cognitive and Motor Choice
 
 
 zeros = np.array(np.where(equal_m_c == 0.0))
