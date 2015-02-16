@@ -9,12 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
 C1 = np.load("Piron-C1.npy")[:,:60]
 C2 = np.load("Piron-C2.npy")[:,:60]
 C3 = np.load("Piron-C3.npy")[:,:60]
 C4 = np.load("Piron-C4.npy")[:,:60]
-
-
 
 from matplotlib import rcParams
 rcParams['xtick.direction'] = 'out'
@@ -29,7 +28,6 @@ axes.spines['bottom'].set_position(('data',0))
 axes.yaxis.set_ticks_position('left')
 
 n = C1.shape[1]
-
 
 axes.plot(np.arange(n), np.mean(C1["P"],axis=0),
           lw=1.5, c='0.5', linestyle="--", label="HC with GPi")
@@ -99,3 +97,4 @@ ax.text(3.125,-150,"Without GPi", clip_on=False, ha="center", va="top", fontsize
 
 plt.savefig("RT.pdf")
 plt.show()
+
