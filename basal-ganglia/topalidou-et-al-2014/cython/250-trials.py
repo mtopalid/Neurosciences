@@ -48,12 +48,12 @@ def debug(time, cues, choice, reward):
 
 
 n_experiments = 250
-n_trials      = 120
+n_trials      = 180
 P = np.zeros((n_experiments,n_trials))
 filename = "%d-experiments-%d-trials-performances.npy" % (n_experiments, n_trials)
 
 # Put 1 if you want to run a new set of experiments
-if 0:
+if 1:
     for k in range(n_experiments):
         reset()
         p = []
@@ -63,7 +63,7 @@ if 0:
             for i in xrange(0,500):
                 iterate(dt)
             # Trial setup
-            set_trial(n=2)
+            set_trial(n=2, trial = j)
             # Learning phase (2500ms)
             for i in xrange(500,3000):
                 iterate(dt)
@@ -77,7 +77,10 @@ if 0:
                         p.append(0)
                     P[k,j] = np.mean(p)
                     break
-        print "Experiment %d: %g" % (k,np.mean(p))
+        print "Experiment %d: %g" % (k+1,np.mean(p)*100), "%"
+    	print "CTX.cog->CTX.ass:", connections["CTX.cog -> CTX.ass"].weights
+    	print "CTX.mot->CTX.ass:", connections["CTX.mot -> CTX.ass"].weights
+    	print "CTX.cog->STR.cog:", connections["CTX.cog -> STR.cog"].weights, "\n\n"
     np.save(filename, P)
 
 P = np.load(filename)

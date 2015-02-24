@@ -24,6 +24,13 @@ CUE = np.zeros(4, dtype=[("mot", float),
                          ("cog", float),
                          ("value" , float),
                          ("reward", float)])
+
+choices  = np.array([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])
+cues_cog = choices.copy()
+for i in range(1,30):
+	cues_cog = np.vstack((cues_cog,choices))
+np.random.shuffle(cues_cog)
+
 CUE["mot"]    = 0,1,2,3
 CUE["cog"]    = 0,1,2,3
 CUE["value"]  = 0.5
@@ -71,9 +78,15 @@ for name,gain in gains.items():
 
 
 # -----------------------------------------------------------------------------
-def set_trial(n=2, cog_shuffle=True, mot_shuffle=True, noise=noise):
-    if cog_shuffle:
-        np.random.shuffle(CUE["cog"])
+def set_trial(n=2, cog_shuffle=True, mot_shuffle=True, noise=noise, trial = None):
+
+    if trial is not None:
+    	temp = np.array([cues_cog[trial,0], cues_cog[trial,1]])
+    	np.random.shuffle(temp)
+    	CUE["cog"][0], CUE["cog"][1] = temp
+    else:
+		if cog_shuffle:
+			np.random.shuffle(CUE["cog"])
     if mot_shuffle:
         np.random.shuffle(CUE["mot"])
     CTX.mot.Iext = 0
@@ -111,6 +124,7 @@ def reset():
     # CUE["reward"] = rewards
     connections["CTX.cog -> STR.cog"].weights = weights(4)
     connections["CTX.cog -> CTX.ass"].weights = np.ones(4)
+    connections["CTX.mot -> CTX.ass"].weights = np.ones(4)
     reset_activities()
 
 def reset_activities():
@@ -124,12 +138,13 @@ def process(n=2, learning=True):
     # Only the motor decision can designate the chosen cue
     mot_choice = np.argmax(CTX.mot.V)
     for i in range(n):
+        #print mot_choice, CUE["mot"][:n][i]
         if mot_choice == CUE["mot"][:n][i]:
             cog_choice = CUE["cog"][:n][i]
     choice = cog_choice
 
     # Compute reward
-    reward = np.random.uniform(0,1) < CUE["reward"][choice]
+    reward = int(np.random.uniform(0,1) < CUE["reward"][choice])
 
     # Compute prediction error
     error = reward - CUE["value"][choice]
@@ -150,10 +165,11 @@ def process(n=2, learning=True):
     if learning[1]:
         # Hebbian learning
         W = connections["CTX.cog -> CTX.ass"].weights
-        W += alpha_LTP * np.minimum(CTX.cog.V,5.0)
+        W += alpha_LTP * np.minimum(CTX.cog.V,1.0)
+        W = connections["CTX.mot -> CTX.ass"].weights
+        W += alpha_LTP * np.minimum(CTX.mot.V,0.5)
 
     return CUE["cog"][:n], choice, reward
-
 
 def debug(time, cues, choice, reward):
     n = len(cues)
