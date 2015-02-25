@@ -16,6 +16,7 @@ CTX = AssociativeStructure(
 STR = AssociativeStructure(
                  tau=tau, rest=STR_rest, noise=noise, activation=sigmoid )
 STN = Structure( tau=tau, rest=STN_rest, noise=noise, activation=clamp )
+GPE = Structure( tau=tau, rest=GPE_rest, noise=noise, activation=clamp )
 GPI = Structure( tau=tau, rest=GPI_rest, noise=noise, activation=clamp )
 THL = Structure( tau=tau, rest=THL_rest, noise=noise, activation=clamp )
 structures = (CTX, STR, STN, GPI, THL)
@@ -52,6 +53,10 @@ connections = {
     "CTX.mot -> STR.ass" : MotToAss( CTX.mot.V, STR.ass.Isyn, weights(4)  ),
     "CTX.cog -> STN.cog" : OneToOne( CTX.cog.V, STN.cog.Isyn, np.ones(4)  ),
     "CTX.mot -> STN.mot" : OneToOne( CTX.mot.V, STN.mot.Isyn, np.ones(4)  ),
+    "STR.cog -> GPE.cog" : OneToOne( STR.cog.V, GPE.cog.Isyn, np.ones(4)  ), # added
+    "STR.mot -> GPE.mot" : OneToOne( STR.mot.V, GPE.mot.Isyn, np.ones(4)  ), # added
+    "STR.ass -> GPE.cog" : AssToCog( STR.ass.V, GPE.cog.Isyn, np.ones(4)  ), # added
+    "STR.ass -> GPE.mot" : AssToMot( STR.ass.V, GPE.mot.Isyn, np.ones(4)  ), # added
     "STR.cog -> GPI.cog" : OneToOne( STR.cog.V, GPI.cog.Isyn, np.ones(4)  ),
     "STR.mot -> GPI.mot" : OneToOne( STR.mot.V, GPI.mot.Isyn, np.ones(4)  ),
     "STR.ass -> GPI.cog" : AssToCog( STR.ass.V, GPI.cog.Isyn, np.ones(4)  ),
@@ -69,6 +74,8 @@ connections = {
     "CTX.ass -> CTX.mot" : AssToMot( CTX.ass.V, CTX.mot.Isyn, np.ones(4), ), # new
     "CTX.cog -> CTX.ass" : CogToAss( CTX.cog.V, CTX.ass.Isyn, np.ones(4)  ), # plastic (Hebbian)
     "CTX.mot -> CTX.ass" : MotToAss( CTX.mot.V, CTX.ass.Isyn, np.ones(4), ), # new (null ?)
+    "GPE.cog -> STN.cog" : OneToOne( GPE.cog.V, STN.cog.Isyn, np.ones(4), ), # added
+    "GPE.mot -> STN.mot" : OneToOne( GPE.mot.V, STN.mot.Isyn, np.ones(4), ), # added
     "GPI.cog -> THL.cog" : OneToOne( GPI.cog.V, THL.cog.Isyn, np.ones(4), ), # changed
     "GPI.mot -> THL.mot" : OneToOne( GPI.mot.V, THL.mot.Isyn, np.ones(4), ), # changed
 }

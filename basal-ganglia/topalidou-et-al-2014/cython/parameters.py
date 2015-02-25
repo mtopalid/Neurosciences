@@ -28,6 +28,7 @@ noise              = 0.001
 CTX_rest   =  -3.0
 STR_rest   =   0.0
 STN_rest   = -10.0
+GPE_rest   =  10.0 # added
 GPI_rest   =  10.0
 THL_rest   = -40.0
 
@@ -45,12 +46,18 @@ gains = { "CTX.cog -> STR.cog" : +1.0,
           "CTX.mot -> STR.ass" : +0.2,
           "CTX.cog -> STN.cog" : +1.0,
           "CTX.mot -> STN.mot" : +1.0,
+          "STR.cog -> GPE.cog" : -2.0, # added
+          "STR.mot -> GPE.mot" : -2.0, # added
+          "STR.ass -> GPE.cog" : -2.0, # added
+          "STR.ass -> GPE.mot" : -2.0, # added
           "STR.cog -> GPI.cog" : -2.0,
           "STR.mot -> GPI.mot" : -2.0,
           "STR.ass -> GPI.cog" : -2.0,
           "STR.ass -> GPI.mot" : -2.0,
           "STN.cog -> GPI.cog" : +1.0,
           "STN.mot -> GPI.mot" : +1.0,
+          "GPE.cog -> STN.cog" : -0.25, # added
+          "GPE.mot -> STN.mot" : -0.25, # added
           "GPI.cog -> THL.cog" : -0.25,
           "GPI.mot -> THL.mot" : -0.25,
 
